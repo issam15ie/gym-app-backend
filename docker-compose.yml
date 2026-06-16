@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: gym-postgres
+    environment:
+      POSTGRES_DB: gym_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - gym_postgres_data:/var/lib/postgresql/data
+
+  gym-app:
+    build:
+          context: .
+          dockerfile: Dockerfile
+    image: gym-app
+    container_name: gym-app-container
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/gym_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+    ports:
+      - "8081:8081"
+
+volumes:
+  gym_postgres_data:
